@@ -20,7 +20,7 @@ export class livePage extends Component {
 
         const user = prompt("Enter your name");
         var peer = new Peer(undefined, {
-            host: "https://dry-mountain-75053.herokuapp.com",
+            host: "dry-mountain-75053.herokuapp.com",
             path: "/peerjs"
         });
 
