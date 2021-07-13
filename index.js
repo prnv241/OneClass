@@ -5,32 +5,26 @@ const { getLessonsInfo, getLesson, getModule, newModule, uploadModule, checkResu
 const { getAssignInfo, getAssgn, getSub, submitSub, uploadSub, getLivelist, createLive, getQuizModule, checkResAsgn, getAsgnQuizRes, newAsgn, getquizsub, getsubsub, getStudList, updateMarks } = require("./handlers/assignments");
 const { ssignup, llogin } = require("./handlers/users");
 const authMiddleware = require("./util/isloggedin");
-const bodyParser = require("body-parser");
 
 
 //Initialize Packages
 
 const express = require("express");
-const app = express();
+var cors = require('cors')
+const app = express()
 const server = require(`http`).Server(app);
 const io = require("socket.io")(server, {
   cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"]
+    origin: "*",
+    method: ['GET', 'POST']
   }
 });
+
 //User Settings
 
-app.use(bodyParser.json());
-
-//CORS
-
-app.use((req, res, next) => {
-  res.append("Access-Control-Allow-Origin", ["*"]);
-  res.append("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-  res.append("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  next();
-});
+app.use(cors())
+app.use(express.urlencoded({extended: true}));
+app.use(express.json()) 
 
 //Route Handlers
 
@@ -96,14 +90,11 @@ if (process.env.NODE_ENV === "production") {
 
 //Socket Com
 io.on("connection", (socket) => {
-  console.log("Hello");
-  socket.on("join-room", (roomId, userId) => {
+  socket.on("join-room", (roomId, userId, userName) => {
     socket.join(roomId);
-    console.log(userId);
     socket.to(roomId).broadcast.emit("user-connected", userId);
-
-    socket.on("disconnect", () => {
-      socket.to(roomId).broadcast.emit("user-disconnected", userId);
+    socket.on("message", (message) => {
+      io.to(roomId).emit("createMessage", message, userName);
     });
   });
 });
