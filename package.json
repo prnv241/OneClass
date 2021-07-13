@@ -18,10 +18,10 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js && peerjs --port=5002 --path=/peerjs",
+    "start": "node index.js",
     "installdev": "npm install && npm install -g peerjs",
     "installcli": "cd client && npm install",
-    "heroku-postbuild": "npm install -g peerjs && cd client && npm install && npm install --only=dev --no-shrinkwrap && npm run build"
+    "heroku-postbuild": ""
   },
   "author": "Pranav",
   "license": "MIT",

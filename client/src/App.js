@@ -28,7 +28,7 @@ import newAsgn from "./pages/addAssignment";
 import studentAnalysis from "./pages/studentAnalysis";
 import livePage from './pages/livePage';
 
-axios.defaults.baseURL = "http://localhost:5001/api";
+axios.defaults.baseURL = "/api";
 // "http://localhost:5001/interndemo-25232/us-central1/api/";
 // axios.defaults.baseURL = 'https://us-central1-interndemo-25232.cloudfunctions.net/api';
 

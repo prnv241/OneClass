@@ -20,8 +20,7 @@ export class livePage extends Component {
 
         const user = prompt("Enter your name");
         var peer = new Peer(undefined, {
-            path: "/peerjs",
-            port: "5002"
+            path: "/peerjs"
         });
 
         let myVideoStream;
