@@ -1,30 +1,30 @@
 //Require Packages
 
 require('dotenv').config();
-const { getLessonsInfo, getLesson, getModule, newModule, uploadModule, checkResults, markRead, getResult } = require("./handlers/lessons");
-const { getAssignInfo, getAssgn, getSub, submitSub, uploadSub, getLivelist, createLive, getQuizModule, checkResAsgn, getAsgnQuizRes, newAsgn, getquizsub, getsubsub, getStudList, updateMarks } = require("./handlers/assignments");
-const { ssignup, llogin } = require("./handlers/users");
-const authMiddleware = require("./util/isloggedin");
+const { getLessonsInfo, getLesson, getModule, newModule, uploadModule, checkResults, markRead, getResult } = require('./handlers/lessons');
+const { getAssignInfo, getAssgn, getSub, submitSub, uploadSub, getLivelist, createLive, getQuizModule, checkResAsgn, getAsgnQuizRes, newAsgn, getquizsub, getsubsub, getStudList, updateMarks } = require('./handlers/assignments');
+const { ssignup, llogin } = require('./handlers/users');
+const authMiddleware = require('./util/isloggedin');
 
 
 //Initialize Packages
 
-const express = require("express");
+const express = require('express');
 var cors = require('cors')
 const app = express()
-const server = require(`http`).Server(app);
-const io = require("socket.io")(server, {
+const server = require('http').Server(app);
+const io = require('socket.io')(server, {
   cors: {
-    origin: "*",
+    origin: '*',
     method: ['GET', 'POST']
   }
 });
-const { ExpressPeerServer } = require("peer");
+const { ExpressPeerServer } = require('peer');
 const peerServer = ExpressPeerServer(server, {
   debug: true,
 });
 
-app.use("/peerjs", peerServer);
+app.use('/peerjs', peerServer);
 
 //User Settings
 
@@ -34,73 +34,73 @@ app.use(express.json())
 
 //Route Handlers
 
-app.get("/api/lessons", authMiddleware, getLessonsInfo);
+app.get('/api/lessons', authMiddleware, getLessonsInfo);
 
-app.get("/api/live", authMiddleware, getLivelist);
+app.get('/api/live', authMiddleware, getLivelist);
 
-app.post("/api/live", authMiddleware, createLive);
+app.post('/api/live', authMiddleware, createLive);
 
-app.get("/api/assignments", authMiddleware, getAssignInfo);
+app.get('/api/assignments', authMiddleware, getAssignInfo);
 
-app.post("/api/module/upload", authMiddleware, uploadModule);
+app.post('/api/module/upload', authMiddleware, uploadModule);
 
-app.get("/api/module/quizes/:ref/result", authMiddleware, getResult);
+app.get('/api/module/quizes/:ref/result', authMiddleware, getResult);
 
-app.post("/api/module/quizes/:chapId/:ref", authMiddleware, checkResults);
+app.post('/api/module/quizes/:chapId/:ref', authMiddleware, checkResults);
 
-app.post("/api/module/new/:chapId", authMiddleware, newModule);
+app.post('/api/module/new/:chapId', authMiddleware, newModule);
 
-app.post("/api/assignments/updatemarks", authMiddleware, updateMarks);
+app.post('/api/assignments/updatemarks', authMiddleware, updateMarks);
 
-app.post("/api/assignment/new/:asgnId", authMiddleware, newAsgn);
+app.post('/api/assignment/new/:asgnId', authMiddleware, newAsgn);
 
-app.get("/api/lessons/:lessonId", authMiddleware, getLesson);
+app.get('/api/lessons/:lessonId', authMiddleware, getLesson);
 
-app.get("/api/assignments/:assgnId", authMiddleware, getAssgn);
+app.get('/api/assignments/:assgnId', authMiddleware, getAssgn);
 
-app.get("/api/module/:type/:chapId/:ref", authMiddleware, getModule);
+app.get('/api/module/:type/:chapId/:ref', authMiddleware, getModule);
 
-app.post("/api/module/:type/:chapId/:ref", authMiddleware, markRead);
+app.post('/api/module/:type/:chapId/:ref', authMiddleware, markRead);
 
-app.post("/api/ssignup", ssignup);
+app.post('/api/ssignup', ssignup);
 
-app.post("/api/login", llogin);
+app.post('/api/login', llogin);
 
-app.get("/api/written/:asgnId/:subId", authMiddleware, getSub);
+app.get('/api/written/:asgnId/:subId', authMiddleware, getSub);
 
-app.get("/api/quiz/:ref/:userId/result", authMiddleware, getAsgnQuizRes);
+app.get('/api/quiz/:ref/:userId/result', authMiddleware, getAsgnQuizRes);
 
-app.get("/api/quiz/:asgnId/:ref", authMiddleware, getQuizModule);
+app.get('/api/quiz/:asgnId/:ref', authMiddleware, getQuizModule);
 
-app.post("/api/written/:asgnId/:subId", authMiddleware, submitSub);
+app.post('/api/written/:asgnId/:subId', authMiddleware, submitSub);
 
-app.post("/api/quiz/:asgnId/:ref", authMiddleware, checkResAsgn);
+app.post('/api/quiz/:asgnId/:ref', authMiddleware, checkResAsgn);
 
-app.get("/api/assignments/quiz/submissions/:id", authMiddleware, getquizsub);
+app.get('/api/assignments/quiz/submissions/:id', authMiddleware, getquizsub);
 
-app.get("/api/assignments/sub/submissions/:id", authMiddleware, getsubsub);
+app.get('/api/assignments/sub/submissions/:id', authMiddleware, getsubsub);
 
-app.get("/api/analysis/studlist", getStudList);
+app.get('/api/analysis/studlist', getStudList);
 
-app.post("/api/written/upload", authMiddleware, uploadSub);
+app.post('/api/written/upload', authMiddleware, uploadSub);
 
 //Production Script
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static("client/build"));
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('client/build'));
 
-  const path = require("path");
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  const path = require('path');
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
   });
 }
 
 //Socket Com
-io.on("connection", (socket) => {
-  socket.on("join-room", (roomId, userId, userName) => {
+io.on('connection', (socket) => {
+  socket.on('join-room', (roomId, userId, userName) => {
     socket.join(roomId);
-    socket.to(roomId).broadcast.emit("user-connected", userId);
-    socket.on("message", (message) => {
-      io.to(roomId).emit("createMessage", message, userName);
+    socket.to(roomId).broadcast.emit('user-connected', userId);
+    socket.on('message', (message) => {
+      io.to(roomId).emit('createMessage', message, userName);
     });
   });
 });
