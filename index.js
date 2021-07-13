@@ -1,16 +1,17 @@
 //Require Packages
 
-require('dotenv').config();
+//require('dotenv').config();
 const { getLessonsInfo, getLesson, getModule, newModule, uploadModule, checkResults, markRead, getResult } = require('./handlers/lessons');
 const { getAssignInfo, getAssgn, getSub, submitSub, uploadSub, getLivelist, createLive, getQuizModule, checkResAsgn, getAsgnQuizRes, newAsgn, getquizsub, getsubsub, getStudList, updateMarks } = require('./handlers/assignments');
 const { ssignup, llogin } = require('./handlers/users');
 const authMiddleware = require('./util/isloggedin');
+const path = require('path');
 
 
 //Initialize Packages
 
 const express = require('express');
-var cors = require('cors')
+const cors = require('cors')
 const app = express()
 const server = require('http').Server(app);
 const io = require('socket.io')(server, {
@@ -87,8 +88,6 @@ app.post('/api/written/upload', authMiddleware, uploadSub);
 //Production Script
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('client/build'));
-
-  const path = require('path');
   app.get('*', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
   });

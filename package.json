@@ -26,6 +26,6 @@
   "author": "Pranav",
   "license": "MIT",
   "engines": {
-    "node": "6.11.1"
+    "node": "12.16.1"
   }
 }
