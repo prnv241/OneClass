@@ -21,7 +21,7 @@
     "start": "node index.js",
     "installdev": "npm install && npm install -g peerjs",
     "installcli": "cd client && npm install",
-    "heroku-postbuild": ""
+    "heroku-postbuild": "npm install"
   },
   "author": "Pranav",
   "license": "MIT",
