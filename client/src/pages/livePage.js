@@ -20,6 +20,7 @@ export class livePage extends Component {
 
         const user = prompt("Enter your name");
         var peer = new Peer(undefined, {
+            host: "https://dry-mountain-75053.herokuapp.com",
             path: "/peerjs"
         });
 
@@ -54,6 +55,10 @@ export class livePage extends Component {
                 addVideoStream(video, userVideoStream);
             });
         };
+
+        socket.on('connect', ()=> {
+            console.log("SOC CON");
+        })
 
         peer.on("open", (id) => {
             console.log("OPEN")

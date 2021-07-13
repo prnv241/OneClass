@@ -20,13 +20,6 @@ const io = require('socket.io')(server, {
     method: ['GET', 'POST']
   }
 });
-const { ExpressPeerServer } = require('peer');
-const peerServer = ExpressPeerServer(server, {
-  debug: true,
-});
-
-app.use('/peerjs', peerServer);
-
 //User Settings
 
 app.use(cors())
