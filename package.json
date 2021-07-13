@@ -24,8 +24,5 @@
     "heroku-postbuild": ""
   },
   "author": "Pranav",
-  "license": "MIT",
-  "engines": {
-    "node": "14.x"
-  }
+  "license": "MIT"
 }
