@@ -3,7 +3,7 @@ import "./App.css";
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
-import * as ActionTypes from './redux/types';
+import * as ActionTypes from "./redux/types";
 
 import { Provider } from "react-redux";
 import store from "./redux/store";
@@ -26,7 +26,7 @@ import analysisList from "./pages/analysisList";
 import asgnquizres from "./pages/asgnquizres";
 import newAsgn from "./pages/addAssignment";
 import studentAnalysis from "./pages/studentAnalysis";
-import livePage from './pages/livePage';
+import livePage from "./pages/livePage";
 
 axios.defaults.baseURL = "/api";
 // "http://localhost:5001/interndemo-25232/us-central1/api/";
@@ -35,23 +35,26 @@ axios.defaults.baseURL = "/api";
 let token = localStorage.token;
 if (token) {
   var decoded = jwt_decode(token);
-  console.log(Date.now(), decoded.exp)
+  console.log(Date.now(), decoded.exp);
   if (Date.now() < decoded.exp * 1000) {
-    axios.defaults.headers.common['Authorization'] = token;
-    axios.post('/login', {
-      localId: decoded.user_id
-    }).then(resdata => {
-      store.dispatch({
-        type: ActionTypes.LOGIN_USER,
-        payload: resdata.data
+    axios.defaults.headers.common["Authorization"] = token;
+    axios
+      .post("/login", {
+        localId: decoded.user_id,
+      })
+      .then((resdata) => {
+        store.dispatch({
+          type: ActionTypes.LOGIN_USER,
+          payload: resdata.data,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
       });
-    }).catch(err => {
-      console.log(err);
-    })
   } else {
     localStorage.removeItem("token");
     alert("Session Expired! Please login again");
-  };
+  }
 }
 
 function App() {

@@ -7,7 +7,6 @@ const { ssignup, llogin } = require('./handlers/users');
 const authMiddleware = require('./util/isloggedin');
 const path = require('path');
 
-
 //Initialize Packages
 
 const express = require('express');
@@ -96,6 +95,16 @@ io.on('connection', (socket) => {
     });
   });
 });
+
+// For Production
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("client/build"));
+
+  const path = require("path");
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  });
+}
 
 //Listen server
 

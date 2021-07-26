@@ -115,7 +115,7 @@ export class WrittenAssignment extends Component {
     return (
       <>
         <Navbar />
-        <JumboTitle title={"Student Name"} />
+        <JumboTitle title={"Pranav"} />
         <div className="whole">
           <div>Class : 10</div>
           <div>Roll No. : 34</div>

@@ -1,8 +1,9 @@
-const { db, admin } = require('../util/admin');
-const { v4: uuid } = require('uuid');
+const { db, admin } = require("../util/admin");
+const { v4: uuid } = require("uuid");
 
 exports.getAssignInfo = (req, res) => {
-  db.collection('assignments').get()
+  db.collection("assignments")
+    .get()
     .then((data) => {
       let assignments = [];
       data.forEach((doc) => {
@@ -23,11 +24,12 @@ exports.getAssignInfo = (req, res) => {
     .catch((err) => {
       res.status(500).json({ error: err.message });
     });
-}
+};
 
 exports.getAssgn = (req, res) => {
   let assignment = {};
-  db.doc(`/assignments/${req.params.assgnId}`).get()
+  db.doc(`/assignments/${req.params.assgnId}`)
+    .get()
     .then((doc) => {
       assignment.metadata = doc.data().metadata;
       assignment.lessonId = doc.id;
@@ -39,11 +41,12 @@ exports.getAssgn = (req, res) => {
     .catch((err) => {
       res.status(500).json({ error: err.message });
     });
-}
+};
 
 exports.getSub = (req, res) => {
   let submission = {};
-  db.doc(`/submissions/${req.params.subId}`).get()
+  db.doc(`/submissions/${req.params.subId}`)
+    .get()
     .then((doc) => {
       submission.name = doc.data().name;
       submission.desc = doc.data().desc;
@@ -52,40 +55,43 @@ exports.getSub = (req, res) => {
     .catch((err) => {
       res.status(500).json({ error: err.message });
     });
-}
+};
 
 exports.checkResAsgn = (req, res) => {
   var asgnId = req.params.asgnId;
   var ref = req.params.ref;
   var results = {};
-  db.doc(`/quizes/${ref}`).get()
-    .then(doc => {
+  db.doc(`/quizes/${ref}`)
+    .get()
+    .then((doc) => {
       var questions = doc.data().questions;
       var answers = doc.data().answers;
       var submitted = req.body.quizAns;
       results.noques = questions.length;
       results.nosub = submitted.length;
       var correct = 0;
-      submitted.forEach(sub => {
-        let obj = answers.find(o => o.id === sub.id);
+      submitted.forEach((sub) => {
+        let obj = answers.find((o) => o.id === sub.id);
         if (obj.answer === sub.ans) {
           correct = correct + 1;
         }
-      })
+      });
       results.nocurr = correct;
       results.percent = (correct / questions.length) * 100;
       var ress = { ...results, ...req.body.data };
-      db.collection('quizSubs').add(ress)
-        .then(doc => {
-          db.doc(`/assignments/${asgnId}`).get()
-            .then(asgn => {
+      db.collection("quizSubs")
+        .add(ress)
+        .then((doc) => {
+          db.doc(`/assignments/${asgnId}`)
+            .get()
+            .then((asgn) => {
               var dubs;
               dubs = asgn.data().quizes;
               dubs.forEach((quiz) => {
                 if (quiz.ref === ref) {
                   quiz.complited.push(req.user.user_id);
                 }
-              })
+              });
               db.doc(`/assignments/${asgnId}`).update({ quizes: dubs });
               return res.json({ success: "Quiz submitted successfully! " });
             })
@@ -103,7 +109,7 @@ exports.checkResAsgn = (req, res) => {
       console.error(err);
       return res.status(500).json({ error: "something went wrong" });
     });
-}
+};
 
 exports.submitSub = (req, res) => {
   const asgnId = req.params.asgnId;
@@ -117,20 +123,23 @@ exports.submitSub = (req, res) => {
     time: Date.now(),
     asgnId: asgnId,
     subId: subId,
-    userId: req.body.userId
-  }
-  db.collection('asgnSubs').add(asgnSub)
-    .then(doc => {
+    userId: req.body.userId,
+  };
+  db.collection("asgnSubs")
+    .add(asgnSub)
+    .then((doc) => {
       var subs;
-      db.doc(`/assignments/${asgnId}`).get()
-        .then(asgn => {
+      db.doc(`/assignments/${asgnId}`)
+        .get()
+        .then((asgn) => {
           subs = asgn.data().submissions;
           subs.forEach((sub) => {
             if (sub.ref === subId) {
               sub.complited.push(req.user.user_id);
             }
-          })
-          db.doc(`/assignments/${asgnId}`).update({ submissions: subs })
+          });
+          db.doc(`/assignments/${asgnId}`)
+            .update({ submissions: subs })
             .then(() => {
               return res.json(subs);
             })
@@ -138,9 +147,9 @@ exports.submitSub = (req, res) => {
               console.error(err);
               return res.status(500).json({ error: err.message });
             });
-        })
-    })
-}
+        });
+    });
+};
 
 exports.uploadSub = (req, res) => {
   const BusBoy = require("busboy");
@@ -180,7 +189,7 @@ exports.uploadSub = (req, res) => {
         },
       })
       .then(() => {
-        const FileUri = `https://firebasestorage.googleapis.com/v0/b/${process.env.STORAGE_BUCKET}/o/${FileName}?alt=media&token=${generatedToken}`;
+        const FileUri = `https://firebasestorage.googleapis.com/v0/b/interndemo-25232.appspot.com/o/${FileName}?alt=media&token=${generatedToken}`;
         return res.json({ fileUrl: FileUri });
       })
       .catch((err) => {
@@ -195,8 +204,9 @@ exports.getQuizModule = (req, res) => {
   let module = {};
   const asgnId = req.params.asgnId;
   const ref = req.params.ref;
-  db.doc(`/assignments/${asgnId}`).get()
-    .then(doc => {
+  db.doc(`/assignments/${asgnId}`)
+    .get()
+    .then((doc) => {
       module.chapter = {
         metadata: doc.data().metadata,
         lessonId: doc.id,
@@ -206,9 +216,10 @@ exports.getQuizModule = (req, res) => {
       };
       return db.doc(`/quizes/${ref}`);
     })
-    .then(body => {
-      body.get()
-        .then(doc => {
+    .then((body) => {
+      body
+        .get()
+        .then((doc) => {
           module.data = doc.data();
           module.data.ref = doc.id;
           module.data.answers = {};
@@ -221,12 +232,15 @@ exports.getQuizModule = (req, res) => {
     .catch((err) => {
       res.status(500).json({ error: err.message });
     });
-}
+};
 
 exports.getAsgnQuizRes = (req, res) => {
   var ref = req.params.ref;
   var userId = req.params.userId;
-  db.collection('quizSubs').where("userId", "==", userId).where("quizId", "==", ref).get()
+  db.collection("quizSubs")
+    .where("userId", "==", userId)
+    .where("quizId", "==", ref)
+    .get()
     .then((data) => {
       console.log(data.docs[0].data());
       var resa = {
@@ -237,36 +251,39 @@ exports.getAsgnQuizRes = (req, res) => {
         quizId: data.docs[0].data().quizId,
         studName: data.docs[0].data().studName,
         userId: data.docs[0].data().userId,
-        rollno: data.docs[0].data().rollno
-      }
+        rollno: data.docs[0].data().rollno,
+      };
       return res.json(resa);
     })
     .catch((err) => {
       console.error(err);
       return res.status(500).json({ error: err.message });
     });
-}
+};
 
 exports.newAsgn = (req, res) => {
   var asgnId = req.params.asgnId;
   var newAsgn = req.body.asgndata;
-  db.collection('submissions').add(newAsgn)
-    .then(data => {
-      db.doc(`/assignments/${asgnId}`).get()
-        .then(doc => {
+  db.collection("submissions")
+    .add(newAsgn)
+    .then((data) => {
+      db.doc(`/assignments/${asgnId}`)
+        .get()
+        .then((doc) => {
           var temp = doc.data().submissions;
           var newsub = {
             name: newAsgn.name,
             complited: [],
             ref: data.id,
-            time: newAsgn.time
-          }
+            time: newAsgn.time,
+          };
           temp.push(newsub);
-          db.doc(`/assignments/${asgnId}`).update({ submissions: temp })
-            .then(rec => {
+          db.doc(`/assignments/${asgnId}`)
+            .update({ submissions: temp })
+            .then((rec) => {
               console.log("Assignment Added!");
               return res.status(200).json(temp);
-            })
+            });
         })
         .catch((err) => {
           console.error(err);
@@ -277,12 +294,14 @@ exports.newAsgn = (req, res) => {
       console.error(err);
       return res.status(500).json({ error: err.message });
     });
-}
+};
 
 exports.getquizsub = (req, res) => {
   var ref = req.params.id;
   var result = [];
-  db.collection('quizSubs').where("quizId", "==", ref).get()
+  db.collection("quizSubs")
+    .where("quizId", "==", ref)
+    .get()
     .then((data) => {
       console.log(data.docs.length);
       data.docs.forEach((doc) => {
@@ -294,10 +313,10 @@ exports.getquizsub = (req, res) => {
           quizId: doc.data().quizId,
           studName: doc.data().studName,
           userId: doc.data().userId,
-          rollno: doc.data().rollno
-        }
+          rollno: doc.data().rollno,
+        };
         result.push(resa);
-      })
+      });
       console.log(result);
       return res.json(result);
     })
@@ -305,13 +324,14 @@ exports.getquizsub = (req, res) => {
       console.error(err);
       return res.status(500).json({ error: err.message });
     });
-}
-
+};
 
 exports.getsubsub = (req, res) => {
   var ref = req.params.id;
   var result = [];
-  db.collection('asgnSubs').where("subId", "==", ref).get()
+  db.collection("asgnSubs")
+    .where("subId", "==", ref)
+    .get()
     .then((data) => {
       data.docs.forEach((doc) => {
         var resa = {
@@ -323,32 +343,37 @@ exports.getsubsub = (req, res) => {
           studName: doc.data().studName,
           subId: doc.data().subId,
           time: doc.data().time,
-          url: doc.data().url
-        }
+          url: doc.data().url,
+        };
         result.push(resa);
-      })
+      });
       return res.json(result);
     })
     .catch((err) => {
       console.error(err);
       return res.status(500).json({ error: err.message });
     });
-}
+};
 
 exports.updateMarks = (req, res) => {
   var ref = req.body.ref;
   var userId = req.body.userId;
   var marks = req.body.marks;
-  db.collection('asgnSubs').where("userId", "==", userId).where("subId", "==", ref).get()
+  db.collection("asgnSubs")
+    .where("userId", "==", userId)
+    .where("subId", "==", ref)
+    .get()
     .then((data) => {
       var id = data.docs[0].id;
-      db.doc(`/asgnSubs/${id}`).update({ marks: marks })
-        .then(doc => {
-          db.doc(`/asgnSubs/${id}`).get()
-            .then(dc => {
+      db.doc(`/asgnSubs/${id}`)
+        .update({ marks: marks })
+        .then((doc) => {
+          db.doc(`/asgnSubs/${id}`)
+            .get()
+            .then((dc) => {
               return res.json(dc.data());
             })
-            .catch(err => console.log(err));
+            .catch((err) => console.log(err));
         })
         .catch((err) => {
           console.error(err);
@@ -359,39 +384,43 @@ exports.updateMarks = (req, res) => {
       console.error(err);
       return res.status(500).json({ error: err.message });
     });
-}
+};
 
 exports.getStudList = (req, res) => {
   var studlist = [];
-  db.collection('users').where("role", "==", "Student").get()
-    .then(data => {
+  db.collection("users")
+    .where("role", "==", "Student")
+    .get()
+    .then((data) => {
       data.docs.forEach((doc) => {
         studlist.push(doc.data());
-      })
+      });
       return res.json(studlist);
     })
-    .catch(err => console.log(err));
-}
+    .catch((err) => console.log(err));
+};
 
 exports.getLivelist = (req, res) => {
   var liveList = [];
-  db.collection('lives').get()
-    .then(data => {
+  db.collection("lives")
+    .get()
+    .then((data) => {
       data.docs.forEach((doc) => {
         liveList.push(doc.data());
-      })
+      });
       return res.json(liveList);
     })
-    .catch(err => console.log(err));
-}
+    .catch((err) => console.log(err));
+};
 
 exports.createLive = (req, res) => {
   var uid = req.body.uid;
   var userId = req.body.userId;
   var name = req.body.name;
-  db.collection('lives').add({ uid, userId, name })
-    .then(doc => {
+  db.collection("lives")
+    .add({ uid, userId, name })
+    .then((doc) => {
       return res.json({ uid, userId, name });
     })
-    .catch(err => console.log(err));
-}
+    .catch((err) => console.log(err));
+};
