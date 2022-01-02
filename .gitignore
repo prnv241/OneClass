@@ -1,4 +1,6 @@
 node_modules/
 .env
-peerserver/node_modules/
+peer_server/node_modules/
 util/interndemo-25232-firebase-adminsdk-8l1bz-49f79646ca.json
+client/node_modules
+client/build

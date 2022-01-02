@@ -1,0 +1,15 @@
+{
+  "name": "peerserver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "peerserver.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node peerserver.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "peer": "^0.6.1"
+  }
+}
